@@ -103,11 +103,25 @@ void listBooksByAuthor(const char* author) {
     }
 }
 
+void updateBook(const char* oldTitle, const char* newTitle, const char* newAuthor) {
+    for (int i = 0; i < bookCount; i++) {
+        if (strcmp(library[i].title, oldTitle) == 0) {
+            strcpy(library[i].title, newTitle);
+            strcpy(library[i].author, newAuthor);
+            printf("Book updated: %s by %s\n", newTitle, newAuthor);
+            return;
+        }
+    }
+    printf("Book not found.\n");
+}
+
 int main() {
     int choice;
     char title[100];
     char author[100];
     char borrower[100];
+    char newTitle[100];
+    char newAuthor[100];
 
     while (1) {
         printf("\nLibrary Management System\n");
@@ -118,9 +132,14 @@ int main() {
         printf("5. Return Book\n");
         printf("6. List Issued Books\n");
         printf("7. List Books by Author\n");
-        printf("8. Exit\n");
+        printf("8. Update Book Details\n");
+        printf("9. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n');
+            continue;
+        }
 
         switch (choice) {
             case 1:
@@ -171,6 +190,19 @@ int main() {
                 listBooksByAuthor(author);
                 break;
             case 8:
+                printf("Enter current book title to update: ");
+                getchar();
+                fgets(title, sizeof(title), stdin);
+                title[strcspn(title, "\n")] = '\0';
+                printf("Enter new book title: ");
+                fgets(newTitle, sizeof(newTitle), stdin);
+                newTitle[strcspn(newTitle, "\n")] = '\0';
+                printf("Enter new author name: ");
+                fgets(newAuthor, sizeof(newAuthor), stdin);
+                newAuthor[strcspn(newAuthor, "\n")] = '\0';
+                updateBook(title, newTitle, newAuthor);
+                break;
+            case 9:
                 return 0;
             default:
                 printf("Invalid choice. Please try again.\n");
