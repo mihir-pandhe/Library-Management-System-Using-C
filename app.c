@@ -90,6 +90,19 @@ void listIssuedBooks() {
     }
 }
 
+void listBooksByAuthor(const char* author) {
+    int found = 0;
+    for (int i = 0; i < bookCount; i++) {
+        if (strcmp(library[i].author, author) == 0) {
+            printf("Found: %s by %s\n", library[i].title, library[i].author);
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("No books found by %s.\n", author);
+    }
+}
+
 int main() {
     int choice;
     char title[100];
@@ -104,7 +117,8 @@ int main() {
         printf("4. Issue Book\n");
         printf("5. Return Book\n");
         printf("6. List Issued Books\n");
-        printf("7. Exit\n");
+        printf("7. List Books by Author\n");
+        printf("8. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -150,6 +164,13 @@ int main() {
                 listIssuedBooks();
                 break;
             case 7:
+                printf("Enter author name to list books: ");
+                getchar();
+                fgets(author, sizeof(author), stdin);
+                author[strcspn(author, "\n")] = '\0';
+                listBooksByAuthor(author);
+                break;
+            case 8:
                 return 0;
             default:
                 printf("Invalid choice. Please try again.\n");
