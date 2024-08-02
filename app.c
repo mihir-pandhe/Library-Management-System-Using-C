@@ -2,14 +2,22 @@
 #include <string.h>
 
 #define MAX_BOOKS 100
+#define MAX_ISSUED_BOOKS 50
 
 typedef struct {
     char title[100];
     char author[100];
 } Book;
 
+typedef struct {
+    char title[100];
+    char borrower[100];
+} IssuedBook;
+
 Book library[MAX_BOOKS];
+IssuedBook issuedBooks[MAX_ISSUED_BOOKS];
 int bookCount = 0;
+int issuedBookCount = 0;
 
 void addBook(const char* title, const char* author) {
     if (bookCount < MAX_BOOKS) {
@@ -45,17 +53,58 @@ void searchBookByTitle(const char* title) {
     }
 }
 
+void issueBook(const char* title, const char* borrower) {
+    for (int i = 0; i < bookCount; i++) {
+        if (strcmp(library[i].title, title) == 0 && issuedBookCount < MAX_ISSUED_BOOKS) {
+            strcpy(issuedBooks[issuedBookCount].title, title);
+            strcpy(issuedBooks[issuedBookCount].borrower, borrower);
+            issuedBookCount++;
+            printf("Book issued: %s to %s\n", title, borrower);
+            return;
+        }
+    }
+    printf("Book not found or all books issued.\n");
+}
+
+void returnBook(const char* title) {
+    for (int i = 0; i < issuedBookCount; i++) {
+        if (strcmp(issuedBooks[i].title, title) == 0) {
+            for (int j = i; j < issuedBookCount - 1; j++) {
+                issuedBooks[j] = issuedBooks[j + 1];
+            }
+            issuedBookCount--;
+            printf("Book returned: %s\n", title);
+            return;
+        }
+    }
+    printf("Issued book not found.\n");
+}
+
+void listIssuedBooks() {
+    if (issuedBookCount == 0) {
+        printf("No books issued.\n");
+    } else {
+        for (int i = 0; i < issuedBookCount; i++) {
+            printf("%d. %s issued to %s\n", i + 1, issuedBooks[i].title, issuedBooks[i].borrower);
+        }
+    }
+}
+
 int main() {
     int choice;
     char title[100];
     char author[100];
+    char borrower[100];
 
     while (1) {
         printf("\nLibrary Management System\n");
         printf("1. Add Book\n");
         printf("2. List Books\n");
         printf("3. Search Book by Title\n");
-        printf("4. Exit\n");
+        printf("4. Issue Book\n");
+        printf("5. Return Book\n");
+        printf("6. List Issued Books\n");
+        printf("7. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -81,6 +130,26 @@ int main() {
                 searchBookByTitle(title);
                 break;
             case 4:
+                printf("Enter book title to issue: ");
+                getchar();
+                fgets(title, sizeof(title), stdin);
+                title[strcspn(title, "\n")] = '\0';
+                printf("Enter borrower name: ");
+                fgets(borrower, sizeof(borrower), stdin);
+                borrower[strcspn(borrower, "\n")] = '\0';
+                issueBook(title, borrower);
+                break;
+            case 5:
+                printf("Enter book title to return: ");
+                getchar();
+                fgets(title, sizeof(title), stdin);
+                title[strcspn(title, "\n")] = '\0';
+                returnBook(title);
+                break;
+            case 6:
+                listIssuedBooks();
+                break;
+            case 7:
                 return 0;
             default:
                 printf("Invalid choice. Please try again.\n");
